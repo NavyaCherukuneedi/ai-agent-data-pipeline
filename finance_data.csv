@@ -1,0 +1,6 @@
+transaction_id,user_id,stock_symbol,transaction_type,quantity,price_per_share,timestamp
+101,1,AAPL,BUY,10,150.0,2024-01-15 09:30:00
+102,2,GOOGL,BUY,5,2800.0,2024-01-16 10:00:00
+103,1,TSLA,SELL,3,720.0,2024-01-17 11:15:00
+104,3,AAPL,BUY,8,155.0,2024-01-18 13:00:00
+105,2,MSFT,SELL,7,300.0,2024-01-19 14:30:00

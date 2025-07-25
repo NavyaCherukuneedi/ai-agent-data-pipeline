@@ -1,0 +1,5 @@
+
+crewai
+duckdb
+pandas
+great_expectations

@@ -1,0 +1,6 @@
+
+{
+    "source": "csv",
+    "file_path": "./data/raw_data.csv",
+    "destination": "duckdb"
+}

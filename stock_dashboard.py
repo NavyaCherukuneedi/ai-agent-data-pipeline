@@ -1,0 +1,55 @@
+# stock_dashboard.py
+import streamlit as st
+import duckdb
+import pandas as pd
+import plotly.graph_objects as go
+
+# Setup
+st.set_page_config(page_title="📊 Stock Dashboard", layout="wide")
+st.title("📈 Real-Time Stock Prices Dashboard")
+
+# Load data
+try:
+    con = duckdb.connect("data_pipeline.duckdb", read_only=True)
+    df = con.execute("SELECT * FROM stock_prices").fetchdf()
+
+    st.success("✅ Loaded stock_prices table")
+
+    # Convert datetime and sort
+    df["Datetime"] = pd.to_datetime(df["Datetime"])
+    df.sort_values(by=["symbol", "Datetime"], inplace=True)
+
+    # Select stock symbol
+    symbol_list = df["symbol"].unique().tolist()
+    selected_symbol = st.selectbox("Select a stock symbol", symbol_list)
+
+    symbol_df = df[df["symbol"] == selected_symbol].copy()
+
+    # Calculate % change
+    symbol_df["% Change"] = symbol_df["Close"].pct_change() * 100
+
+    # Layout: Table and chart
+    col1, col2 = st.columns([1, 2])
+
+    with col1:
+        st.subheader(f"📋 Data Preview: {selected_symbol}")
+        st.dataframe(symbol_df.tail(10).style.format({"% Change": "{:.2f}"}))
+
+    with col2:
+        st.subheader(f"📊 OHLC Candlestick: {selected_symbol}")
+        fig = go.Figure(data=[go.Candlestick(
+            x=symbol_df["Datetime"],
+            open=symbol_df["Open"],
+            high=symbol_df["High"],
+            low=symbol_df["Low"],
+            close=symbol_df["Close"]
+        )])
+        fig.update_layout(xaxis_rangeslider_visible=False, height=500)
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Optional: Line chart for % change
+    st.subheader("📉 % Change Over Time")
+    st.line_chart(symbol_df.set_index("Datetime")["% Change"])
+
+except Exception as e:
+    st.error(f"❌ Error loading data: {e}")
