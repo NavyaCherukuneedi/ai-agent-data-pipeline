@@ -9,7 +9,7 @@ import duckdb
 def main():
     print("🚀 Starting Finance Data Pipeline")
 
-    # Ingest CSV data
+    
     ingest_agent = DataIngestAgent()
     cleaner_agent = DataCleanerAgent()
     validator_agent = DataValidatorAgent()
@@ -20,12 +20,12 @@ def main():
     df = validator_agent.run(df)
     loader_agent.run(df)
 
-    # Real-time stock ingestion
+    #Real-Time Stock
     print("\n📈 Starting Stock Ingestion Agent")
     stock_agent = StockIngestionAgent(symbols=["AAPL", "MSFT", "GOOGL"])
     stock_df = stock_agent.run(period="1d", interval="30m")
 
-    # Load to DuckDB
+    
     con = duckdb.connect("data_pipeline.duckdb")
     con.register("stock_df", stock_df)
     con.execute("CREATE OR REPLACE TABLE stock_prices AS SELECT * FROM stock_df")
